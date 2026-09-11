@@ -8,6 +8,11 @@ const getBaseUrl = () => {
   return 'http://127.0.0.1:5001/api';
 };
 
+// const getBaseUrl = () => {
+//   เปลี่ยน 192.168.1.100 เป็น IP เครื่อง API ตัวจริงของ รพ.
+//   return 'http://192.168.1.100:5001/api';
+// };
+
 export const chatTriage = async (
   message: string, 
   history: any[] = [], 
