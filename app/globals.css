@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-teal-500: #009688;
+  --color-teal-600: #00897B;
+  --color-teal-700: #00796B;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #f4f7f6;
+  font-family: 'Prompt', sans-serif;
+  overflow-x: hidden;
+}
