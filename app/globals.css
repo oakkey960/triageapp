@@ -9,7 +9,8 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #f4f7f6;
+  background-color: #F4F9FF;
   font-family: 'Prompt', sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
 }

@@ -1,6 +1,5 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import ClientLayoutWrapper from '../components/ClientLayoutWrapper'
 
 export const metadata: Metadata = {
   title: 'AI Pre-Triage',
@@ -17,12 +16,10 @@ export default function RootLayout({
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body>
-        <div className="min-h-screen bg-gray-50 flex justify-center">
-          <div className="w-full max-w-md bg-white shadow-xl min-h-screen flex flex-col relative overflow-hidden">
-            <ClientLayoutWrapper>
-              {children}
-            </ClientLayoutWrapper>
+      <body className="bg-[#F4F9FF] min-h-screen">
+        <div className="flex justify-center bg-[#F4F9FF] min-h-screen">
+          <div className="w-full max-w-md bg-[#F4F9FF] shadow-xl min-h-screen flex flex-col relative">
+            {children}
           </div>
         </div>
       </body>

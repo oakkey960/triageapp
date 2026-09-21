@@ -11,12 +11,12 @@ import {
 
 const SYMPTOMS = [
   { name: 'มีไข้', icon: Thermometer, color: '#FB8C00', bg: 'rgba(251, 140, 0, 0.1)' },
-  { name: 'ไอ', icon: Wind, color: '#1E88E5', bg: 'rgba(30, 136, 229, 0.1)' },
-  { name: 'เจ็บคอ', icon: Volume2, color: '#E53935', bg: 'rgba(229, 57, 53, 0.1)' },
+  { name: 'ไอ / เจ็บคอ', icon: Volume2, color: '#1E88E5', bg: 'rgba(30, 136, 229, 0.1)' },
   { name: 'ปวดศีรษะ', icon: Brain, color: '#8E24AA', bg: 'rgba(142, 36, 170, 0.1)' },
-  { name: 'ปวดท้อง', icon: Activity, color: '#00897B', bg: 'rgba(0, 137, 123, 0.1)' },
-  { name: 'คลื่นไส้', icon: Droplets, color: '#3949AB', bg: 'rgba(57, 73, 171, 0.1)' },
-  { name: 'ผื่น คัน', icon: Hand, color: '#D81B60', bg: 'rgba(216, 27, 96, 0.1)' },
+  { name: 'ปวดท้อง', icon: Droplets, color: '#002D62', bg: 'rgba(0, 45, 98, 0.1)' },
+  { name: 'แน่นหน้าอก', icon: Activity, color: '#E53935', bg: 'rgba(229, 57, 53, 0.1)' },
+  { name: 'เหนื่อยหอบ', icon: Wind, color: '#3949AB', bg: 'rgba(57, 73, 171, 0.1)' },
+  { name: 'ผื่น / คัน', icon: Hand, color: '#D81B60', bg: 'rgba(216, 27, 96, 0.1)' },
   { name: 'บาดเจ็บ', icon: Bandage, color: '#6D4C41', bg: 'rgba(109, 76, 65, 0.1)' },
   { name: 'อื่นๆ', icon: MoreHorizontal, color: '#757575', bg: 'rgba(117, 117, 117, 0.1)' },
 ];
@@ -27,12 +27,12 @@ const FREQUENCIES = ['เป็นตลอดเวลา', 'เป็นๆ �
 const getAssociatedSymptoms = (main: string) => {
   switch (main) {
     case 'มีไข้': return ['หนาวสั่น', 'ปวดเมื่อยตัว', 'ไอ', 'เจ็บคอ', 'มีผื่น', 'ปวดศีรษะ'];
-    case 'ไอ': return ['มีเสมหะ', 'หอบเหนื่อย', 'มีไข้', 'น้ำมูกไหล', 'เจ็บหน้าอก', 'อ่อนเพลีย'];
-    case 'เจ็บคอ': return ['มีเสมหะ', 'กลืนลำบาก', 'มีไข้', 'ไอ', 'เสียงแหบ', 'อ่อนเพลีย'];
+    case 'ไอ / เจ็บคอ': return ['มีเสมหะ', 'หอบเหนื่อย', 'มีไข้', 'กลืนลำบาก', 'เจ็บหน้าอก', 'อ่อนเพลีย'];
     case 'ปวดศีรษะ': return ['คลื่นไส้อาเจียน', 'ตาพร่ามัว', 'เวียนหัว', 'อ่อนแรงครึ่งซีก', 'มีไข้', 'ปวดคอ/บ่า'];
     case 'ปวดท้อง': return ['ท้องเสีย', 'คลื่นไส้อาเจียน', 'ท้องอืด', 'มีไข้', 'ถ่ายมีเลือด', 'ปัสสาวะแสบขัด'];
-    case 'คลื่นไส้': return ['อาเจียน', 'ปวดท้อง', 'เวียนหัว', 'ท้องเสีย', 'หน้ามืด', 'มีไข้'];
-    case 'ผื่น คัน': return ['หายใจลำบาก', 'บวมตามหน้า/ปาก', 'มีไข้', 'แสบร้อน', 'ตุ่มน้ำใส', 'ลามทั่วตัว'];
+    case 'แน่นหน้าอก': return ['ร้าวไปแขน/กราม', 'ใจสั่น', 'หายใจไม่อิ่ม', 'เหงื่อแตก', 'หน้ามืด', 'คลื่นไส้'];
+    case 'เหนื่อยหอบ': return ['ไอ', 'มีเสมหะ', 'ไข้', 'แน่นหน้าอก', 'หายใจมีเสียงหวีด', 'นอนราบไม่ได้'];
+    case 'ผื่น / คัน': return ['หายใจลำบาก', 'บวมตามหน้า/ปาก', 'มีไข้', 'แสบร้อน', 'ตุ่มน้ำใส', 'ลามทั่วตัว'];
     case 'บาดเจ็บ': return ['เลือดไหลไม่หยุด', 'แผลลึกเปิดกว้าง', 'กระดูกผิดรูป', 'ชา/ขยับไม่ได้', 'ปวดรุนแรง', 'สัตว์กัด/ข่วน'];
     case 'อื่นๆ':
     default: return ['อาเจียน', 'ปวดหัว', 'ปวดท้อง', 'แน่นหน้าอก', 'เวียนหัว', 'หายใจลำบาก', 'มีไข้', 'ผื่นคัน'];
@@ -40,7 +40,7 @@ const getAssociatedSymptoms = (main: string) => {
 };
 
 const getSeverityColor = (level: number) => {
-  if (level === 0) return '#00897B';
+  if (level === 0) return '#002D62';
   if (level <= 2) return '#4CAF50';
   if (level <= 4) return '#8BC34A';
   if (level <= 6) return '#FFB300';
@@ -89,6 +89,9 @@ export default function FormTriage() {
     }
   };
 
+  const shouldShowFrequency = !['บาดเจ็บ', 'ผื่น / คัน'].includes(selectedMainSymptom);
+  const shouldShowSeverity = ['ปวดศีรษะ', 'ปวดท้อง', 'บาดเจ็บ', 'แน่นหน้าอก', 'ไอ / เจ็บคอ', 'อื่นๆ'].includes(selectedMainSymptom);
+
   const handleSubmit = async () => {
     if (!selectedDuration) {
       alert('กรุณาระบุอาการเริ่มเมื่อไหร่');
@@ -99,15 +102,14 @@ export default function FormTriage() {
 
     let text = `ผู้ป่วยมีอาการหลัก: ${selectedMainSymptom}\n`;
     text += `ระยะเวลา: ${selectedDuration}\n`;
-    if (selectedFrequency) text += `ความถี่: ${selectedFrequency}\n`;
-    if (severityLevel > 0) text += `ความรุนแรง: ${severityLevel}/10\n`;
+    if (shouldShowFrequency && selectedFrequency) text += `ความถี่: ${selectedFrequency}\n`;
+    if (shouldShowSeverity && severityLevel > 0) text += `ความรุนแรง: ${severityLevel}/10\n`;
     if (selectedAssociatedSymptoms.length > 0) text += `อาการร่วม: ${selectedAssociatedSymptoms.join(', ')}\n`;
     if (detailText.trim()) text += `รายละเอียดเพิ่มเติม: ${detailText.trim()}\n`;
 
     try {
       const history = [{ role: 'user', text }];
-      const pi = localStorage.getItem("patientInfo"); 
-      const patient = pi ? JSON.parse(pi) : undefined; 
+      const patient = undefined; 
 
       // Get GPS Location
       let locationObj: {lat: number, lng: number} | undefined = undefined;
@@ -142,8 +144,13 @@ export default function FormTriage() {
 
       const result = await chatTriage(text, [], patient, locationObj, imgB64, imgMime);
 
+      const updatedHistory = [
+        ...history,
+        { role: 'model', text: result.nurse_response || 'กรุณาระบุอาการเพิ่มเติม' }
+      ];
+
       localStorage.setItem('triageResult', JSON.stringify(result));
-      localStorage.setItem('triageHistory', JSON.stringify(history));
+      localStorage.setItem('triageHistory', JSON.stringify(updatedHistory));
       localStorage.setItem('triageSummary', text);
 
       setIsLoading(false);
@@ -151,7 +158,7 @@ export default function FormTriage() {
       if (result.is_complete === true) {
         router.push('/result');
       } else {
-        router.push('/follow-up');
+        router.push(`/follow-up?msg=${encodeURIComponent(result.nurse_response || '')}`);
       }
     } catch (e) {
       setIsLoading(false);
@@ -162,7 +169,7 @@ export default function FormTriage() {
   const assocSymptoms = getAssociatedSymptoms(selectedMainSymptom);
 
   return (
-    <div className="min-h-screen bg-[#F4F7F6] flex flex-col justify-between">
+    <div className="w-full bg-[#F4F9FF] flex flex-col min-h-screen">
       {/* AppBar */}
       <div className="bg-white sticky top-0 z-20 shadow-sm">
         <div className="h-14 px-4 flex items-center justify-between">
@@ -171,11 +178,11 @@ export default function FormTriage() {
               if (currentStep > 1) setCurrentStep(currentStep - 1);
               else router.push('/');
             }} 
-            className="p-2 -ml-2 text-[#263238] rounded-full active:bg-gray-100"
+            className="p-2 -ml-2 text-[#002D62] rounded-full active:bg-gray-100"
           >
             <ArrowLeft size={22} />
           </button>
-          <h1 className="text-base font-bold text-[#263238]">
+          <h1 className="text-base font-bold text-[#002D62]">
             {currentStep === 1 ? 'ประเมินด้วยแบบฟอร์ม' : 'ประวัติอาการเพิ่มเติม'}
           </h1>
           <div className="w-8"></div>
@@ -183,8 +190,8 @@ export default function FormTriage() {
 
         {/* Progress Bar */}
         <div className="px-6 pb-3 pt-1 flex items-center gap-2">
-          <div className="flex-1 h-1.5 rounded-full bg-[#00897B]"></div>
-          <div className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${currentStep >= 2 ? 'bg-[#00897B]' : 'bg-gray-200'}`}></div>
+          <div className="flex-1 h-1.5 rounded-full bg-blue-600"></div>
+          <div className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
           <span className="text-xs font-bold text-gray-500 whitespace-nowrap ml-2">
             {currentStep}/2 {currentStep === 1 ? 'อาการหลัก' : 'รายละเอียด'}
           </span>
@@ -195,7 +202,7 @@ export default function FormTriage() {
       <div className="flex-1 p-5 pb-28 overflow-y-auto">
         {currentStep === 1 ? (
           <div>
-            <h2 className="text-lg font-bold text-[#263238]">1. อาการหลักที่พบ</h2>
+            <h2 className="text-lg font-bold text-[#002D62]">1. อาการหลักที่พบ</h2>
             <p className="text-xs text-gray-500 mt-1 mb-5">กรุณาเลือกอาการหลักที่คุณกำลังพบ</p>
 
             {/* 3x3 Grid of 9 Symptoms */}
@@ -210,8 +217,8 @@ export default function FormTriage() {
                     onClick={() => setSelectedMainSymptom(s.name)}
                     className={`aspect-[0.9] rounded-2xl flex flex-col items-center justify-center p-2 transition-all ${
                       isSelected 
-                        ? 'bg-[#E0F2F1] border-2 border-[#00897B] shadow-sm' 
-                        : 'bg-white border border-gray-200 active:bg-gray-50'
+                        ? 'bg-blue-50 border-2 border-blue-500 shadow-sm' 
+                        : 'bg-white border border-gray-200 active:bg-blue-50'
                     }`}
                   >
                     <div 
@@ -220,7 +227,7 @@ export default function FormTriage() {
                     >
                       <IconComponent size={26} style={{ color: s.color }} />
                     </div>
-                    <span className={`text-xs font-medium text-center ${isSelected ? 'font-bold text-[#00897B]' : 'text-gray-800'}`}>
+                    <span className={`text-xs font-medium text-center ${isSelected ? 'font-bold text-[#002D62]' : 'text-[#002D62]'}`}>
                       {s.name}
                     </span>
                   </button>
@@ -233,11 +240,11 @@ export default function FormTriage() {
             {/* Card 1: Duration */}
             <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-[#E0F2F1] text-[#00897B] flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#002D62] flex items-center justify-center flex-shrink-0">
                   <Calendar size={20} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-[#263238]">อาการเริ่มเมื่อไหร่?</h3>
+                  <h3 className="font-bold text-sm text-[#002D62]">อาการเริ่มเมื่อไหร่?</h3>
                   <p className="text-xs text-gray-500">เลือกช่วงเวลาที่อาการเริ่มต้น</p>
                 </div>
               </div>
@@ -249,7 +256,7 @@ export default function FormTriage() {
                       key={d} 
                       onClick={() => setSelectedDuration(d)}
                       className={`flex items-center p-3 rounded-xl border text-xs cursor-pointer transition-colors ${
-                        isSel ? 'bg-[#00897B]/5 border-[#00897B]' : 'border-gray-200 bg-white hover:bg-gray-50'
+                        isSel ? 'bg-blue-50 border-blue-500' : 'border-gray-200 bg-white hover:bg-[#F4F9FF]'
                       }`}
                     >
                       <input 
@@ -257,122 +264,126 @@ export default function FormTriage() {
                         name="duration" 
                         checked={isSel} 
                         onChange={() => setSelectedDuration(d)} 
-                        className="mr-3 accent-[#00897B] w-4 h-4"
+                        className="mr-3 accent-blue-600 w-4 h-4"
                       />
-                      <span className={`${isSel ? 'font-bold text-[#00897B]' : 'text-gray-800'}`}>{d}</span>
+                      <span className={`${isSel ? 'font-bold text-[#002D62]' : 'text-[#002D62]'}`}>{d}</span>
                     </label>
                   );
                 })}
               </div>
             </div>
 
-            {/* Card 2: Frequency */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-[#E0F2F1] text-[#00897B] flex items-center justify-center flex-shrink-0">
-                  <Timer size={20} />
+            {/* Card 2: Frequency (Conditional) */}
+            {shouldShowFrequency && (
+              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 text-[#002D62] flex items-center justify-center flex-shrink-0">
+                    <Timer size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-[#002D62]">อาการเป็นบ่อยแค่ไหน?</h3>
+                    <p className="text-xs text-gray-500">เลือกความถี่ของอาการ</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-sm text-[#263238]">อาการเป็นบ่อยแค่ไหน?</h3>
-                  <p className="text-xs text-gray-500">เลือกความถี่ของอาการ</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                {FREQUENCIES.map((f) => {
-                  const isSel = selectedFrequency === f;
-                  return (
-                    <label 
-                      key={f} 
-                      onClick={() => setSelectedFrequency(f)}
-                      className={`flex items-center p-3 rounded-xl border text-xs cursor-pointer transition-colors ${
-                        isSel ? 'bg-[#00897B]/5 border-[#00897B]' : 'border-gray-200 bg-white hover:bg-gray-50'
-                      }`}
-                    >
-                      <input 
-                        type="radio" 
-                        name="frequency" 
-                        checked={isSel} 
-                        onChange={() => setSelectedFrequency(f)} 
-                        className="mr-3 accent-[#00897B] w-4 h-4"
-                      />
-                      <span className={`${isSel ? 'font-bold text-[#00897B]' : 'text-gray-800'}`}>{f}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Card 3: Severity Scale */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-[#E0F2F1] text-[#00897B] flex items-center justify-center flex-shrink-0">
-                  <Gauge size={20} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-[#263238]">ระดับความรุนแรง</h3>
-                  <p className="text-xs text-gray-500">เลือกระดับความเจ็บปวด (1-10)</p>
+                <div className="space-y-2">
+                  {FREQUENCIES.map((f) => {
+                    const isSel = selectedFrequency === f;
+                    return (
+                      <label 
+                        key={f} 
+                        onClick={() => setSelectedFrequency(f)}
+                        className={`flex items-center p-3 rounded-xl border text-xs cursor-pointer transition-colors ${
+                          isSel ? 'bg-blue-50 border-blue-500' : 'border-gray-200 bg-white hover:bg-[#F4F9FF]'
+                        }`}
+                      >
+                        <input 
+                          type="radio" 
+                          name="frequency" 
+                          checked={isSel} 
+                          onChange={() => setSelectedFrequency(f)} 
+                          className="mr-3 accent-blue-600 w-4 h-4"
+                        />
+                        <span className={`${isSel ? 'font-bold text-[#002D62]' : 'text-[#002D62]'}`}>{f}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
+            )}
 
-              {/* 5 Faces in Horizontal Row */}
-              <div className="flex justify-between items-center px-4 py-3">
-                {[
-                  { val: 2, icon: Laugh, color: '#4CAF50' },
-                  { val: 4, icon: Smile, color: '#8BC34A' },
-                  { val: 6, icon: Meh, color: '#FFB300' },
-                  { val: 8, icon: Frown, color: '#FB8C00' },
-                  { val: 10, icon: Angry, color: '#E53935' },
-                ].map((item, idx) => {
-                  const IconComp = item.icon;
-                  const isActive = severityLevel > 0 && (severityLevel <= item.val && severityLevel > item.val - 2);
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setSeverityLevel(item.val)}
-                      className={`transition-all duration-300 ${isActive ? 'scale-135' : 'scale-100 opacity-40'}`}
-                    >
-                      <IconComp 
-                        size={36} 
-                        style={{ color: isActive ? item.color : '#9E9E9E' }} 
-                      />
-                    </button>
-                  );
-                })}
-              </div>
+            {/* Card 3: Severity Scale (Conditional) */}
+            {shouldShowSeverity && (
+              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 text-[#002D62] flex items-center justify-center flex-shrink-0">
+                    <Gauge size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-[#002D62]">ระดับความรุนแรง</h3>
+                    <p className="text-xs text-gray-500">เลือกระดับความเจ็บปวด (1-10)</p>
+                  </div>
+                </div>
 
-              {/* Slider */}
-              <div className="mt-4 px-2">
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="10" 
-                  value={severityLevel} 
-                  onChange={(e) => setSeverityLevel(Number(e.target.value))}
-                  style={{ accentColor: getSeverityColor(severityLevel) }}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
+                {/* 5 Faces in Horizontal Row */}
+                <div className="flex justify-between items-center px-4 py-3">
+                  {[
+                    { val: 2, icon: Laugh, color: '#4CAF50' },
+                    { val: 4, icon: Smile, color: '#8BC34A' },
+                    { val: 6, icon: Meh, color: '#FFB300' },
+                    { val: 8, icon: Frown, color: '#FB8C00' },
+                    { val: 10, icon: Angry, color: '#E53935' },
+                  ].map((item, idx) => {
+                    const IconComp = item.icon;
+                    const isActive = severityLevel > 0 && (severityLevel <= item.val && severityLevel > item.val - 2);
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setSeverityLevel(item.val)}
+                        className={`transition-all duration-300 ${isActive ? 'scale-135' : 'scale-100 opacity-40'}`}
+                      >
+                        <IconComp 
+                          size={36} 
+                          style={{ color: isActive ? item.color : '#9E9E9E' }} 
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
 
-              {/* Dynamic Label */}
-              <div className="text-center mt-3">
-                <span 
-                  className="text-sm font-bold"
-                  style={{ color: getSeverityColor(severityLevel) }}
-                >
-                  {getSeverityLabel(severityLevel)}
-                </span>
+                {/* Slider */}
+                <div className="mt-4 px-2">
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="10" 
+                    value={severityLevel} 
+                    onChange={(e) => setSeverityLevel(Number(e.target.value))}
+                    style={{ accentColor: getSeverityColor(severityLevel) }}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+
+                {/* Dynamic Label */}
+                <div className="text-center mt-3">
+                  <span 
+                    className="text-sm font-bold"
+                    style={{ color: getSeverityColor(severityLevel) }}
+                  >
+                    {getSeverityLabel(severityLevel)}
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Card 4: Associated Symptoms */}
             <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-[#E0F2F1] text-[#00897B] flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#002D62] flex items-center justify-center flex-shrink-0">
                   <PlusCircle size={20} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-[#263238]">มีอาการอื่นร่วมด้วยไหม?</h3>
+                  <h3 className="font-bold text-sm text-[#002D62]">มีอาการอื่นร่วมด้วยไหม?</h3>
                   <p className="text-xs text-gray-500">เลือกอาการที่พบร่วม (เลือกได้มากกว่า 1 ข้อ)</p>
                 </div>
               </div>
@@ -388,12 +399,12 @@ export default function FormTriage() {
                       onClick={() => toggleAssociated(sym)}
                       className={`flex items-center p-3 rounded-xl border text-xs text-left transition-colors ${
                         isChecked 
-                          ? 'bg-[#00897B]/5 border-[#00897B] font-bold text-[#00897B]' 
-                          : 'border-gray-200 bg-white text-gray-800 hover:bg-gray-50'
+                          ? 'bg-blue-50 border-blue-500 font-bold text-[#002D62]' 
+                          : 'border-gray-200 bg-white text-[#002D62] hover:bg-[#F4F9FF]'
                       }`}
                     >
                       <div className={`w-4 h-4 rounded mr-2.5 flex items-center justify-center border ${
-                        isChecked ? 'bg-[#00897B] border-[#00897B] text-white' : 'border-gray-400 bg-white'
+                        isChecked ? 'bg-blue-600 border-blue-500 text-white' : 'border-gray-400 bg-white'
                       }`}>
                         {isChecked && <Check size={12} strokeWidth={3} />}
                       </div>
@@ -407,11 +418,11 @@ export default function FormTriage() {
             {/* Card 5: Additional Details & Photos */}
             <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-[#E0F2F1] text-[#00897B] flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#002D62] flex items-center justify-center flex-shrink-0">
                   <FileText size={20} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-[#263238]">รายละเอียดเพิ่มเติม (ถ้ามี)</h3>
+                  <h3 className="font-bold text-sm text-[#002D62]">รายละเอียดเพิ่มเติม (ถ้ามี)</h3>
                   <p className="text-xs text-gray-500">อธิบายอาการอื่นๆ หรือแนบรูปถ่าย</p>
                 </div>
               </div>
@@ -421,7 +432,7 @@ export default function FormTriage() {
                 onChange={(e) => setDetailText(e.target.value)}
                 placeholder="พิมพ์อธิบายอาการเพิ่มเติมที่นี่..."
                 rows={3}
-                className="w-full p-3 text-xs bg-white border border-gray-300 rounded-xl outline-none focus:border-[#00897B] resize-none"
+                className="w-full p-3 text-xs bg-white border border-gray-300 rounded-xl outline-none focus:border-blue-500 resize-none"
               />
 
               <div className="mt-3">
@@ -435,7 +446,7 @@ export default function FormTriage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-2.5 px-4 rounded-xl border border-[#00897B] text-[#00897B] font-medium text-xs flex items-center justify-center gap-2 hover:bg-[#00897B]/5 active:bg-[#00897B]/10"
+                  className="w-full py-2.5 px-4 rounded-xl border border-blue-500 text-blue-600 font-medium text-xs flex items-center justify-center gap-2 hover:bg-blue-600/5 active:bg-blue-600/10"
                 >
                   <Camera size={18} />
                   <span>แนบรูปถ่ายบริเวณที่มีอาการ</span>
@@ -475,7 +486,7 @@ export default function FormTriage() {
             }
           }}
           disabled={isLoading}
-          className="w-full h-12 bg-[#00897B] hover:bg-[#00796B] active:scale-[0.99] text-white font-bold text-sm rounded-2xl flex items-center justify-center transition-all shadow-md"
+          className="w-full h-12 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold text-sm rounded-2xl flex items-center justify-center transition-all shadow-md"
         >
           {isLoading ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

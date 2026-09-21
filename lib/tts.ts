@@ -17,7 +17,7 @@ export const speakThai = (text: string, onStart?: () => void, onEnd?: () => void
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'th-TH';
-  utterance.rate = 1.0;
+  utterance.rate = 1.1; // Speed up the voice slightly
   utterance.pitch = 1.0;
 
   // Try finding Thai voice
@@ -39,7 +39,9 @@ export const speakThai = (text: string, onStart?: () => void, onEnd?: () => void
   };
 
   utterance.onerror = (e) => {
-    console.warn('TTS error or cancelled:', e);
+    if (e.error !== 'interrupted' && e.error !== 'canceled' && e.error !== 'not-allowed') {
+      console.warn('TTS error:', e.error || e);
+    }
     currentUtterance = null;
     onEnd?.();
   };
@@ -54,5 +56,14 @@ export const speakThai = (text: string, onStart?: () => void, onEnd?: () => void
 export const stopSpeech = () => {
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.cancel();
+  }
+};
+
+export const unlockTTS = () => {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(' ');
+    utterance.volume = 0; // Silent
+    utterance.onerror = () => {}; // Ignore errors on the unlock utterance
+    window.speechSynthesis.speak(utterance);
   }
 };

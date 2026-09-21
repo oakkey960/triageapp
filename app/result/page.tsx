@@ -1,28 +1,40 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { 
   ArrowLeft, Home, CheckCircle2, MapPin, ChevronRight, 
   Lock, UserCircle, Volume2, ClipboardList, AlertTriangle, 
   Check, Phone, FileText, Download, Shield, Settings,
-  Leaf, HeartPulse, BellRing
+  Leaf, HeartPulse, BellRing, Loader2
 } from 'lucide-react';
+import { PdfTemplate } from '../components/PdfTemplate';
 
 export default function ResultTriage() {
   const router = useRouter();
   const [result, setResult] = useState<any>(null);
+  const [summary, setSummary] = useState('');
+  const [isExportingImage, setIsExportingImage] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+
+  const resultRef = useRef<HTMLDivElement>(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('triageResult');
+    const savedSummary = localStorage.getItem('triageSummary');
     if (saved) {
       setResult(JSON.parse(saved));
+    }
+    if (savedSummary) {
+      setSummary(savedSummary);
     }
   }, []);
 
   if (!result) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-8 h-8 border-3 border-[#00897B] border-t-transparent rounded-full animate-spin mb-3"></div>
+      <div className="flex-1 w-full h-full bg-[#F4F9FF] flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-8 h-8 border-3 border-[#002D62] border-t-transparent rounded-full animate-spin mb-3"></div>
         <p className="text-xs text-gray-500">กำลังโหลดผลการประเมิน...</p>
       </div>
     );
@@ -48,7 +60,7 @@ export default function ResultTriage() {
     }
     // Green
     return {
-      main: '#00897B', bg: '#E0F2F1', text: '#004D40',
+      main: '#008822', bg: '#ECFDF5', text: '#065F46',
       title: 'อาการทั่วไป',
       subtitle: 'อาการไม่รุนแรง สามารถดูแลรักษาได้ที่ รพ.เมือง',
       icon: Leaf
@@ -59,22 +71,73 @@ export default function ResultTriage() {
   const isRed = result.severity?.toLowerCase() === 'red';
   const IconComp = theme.icon;
 
+  const handleSaveImage = async () => {
+    if (!resultRef.current) return;
+    setIsExportingImage(true);
+    try {
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(resultRef.current, {
+        backgroundColor: '#F4F9FF',
+        pixelRatio: 2,
+        filter: (node) => {
+          return !node.hasAttribute?.('data-html2canvas-ignore');
+        }
+      });
+      const link = document.createElement('a');
+      link.download = `triage_result_${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to save image', err);
+      alert('เกิดข้อผิดพลาดในการบันทึกรูปภาพ');
+    } finally {
+      setIsExportingImage(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!pdfRef.current) return;
+    setIsExportingPdf(true);
+    try {
+      const { toPng } = await import('html-to-image');
+      const { jsPDF } = await import('jspdf');
+      
+      const dataUrl = await toPng(pdfRef.current, {
+        pixelRatio: 2,
+      });
+      
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      // Calculate dimensions maintaining aspect ratio
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (pdfRef.current.offsetHeight * pdfWidth) / pdfRef.current.offsetWidth;
+      
+      pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`triage_report_${Date.now()}.pdf`);
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+      alert('เกิดข้อผิดพลาดในการสร้างไฟล์ PDF');
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* AppBar */}
-      <div className="flex items-center justify-between p-4 bg-white sticky top-0 z-30 shadow-sm">
-        <div className="w-6" /> {/* Spacer for centering instead of back button */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[#00897B] rounded-full flex items-center justify-center text-white font-bold">+</div>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-[#00897B] leading-tight">โรงพยาบาลพระปกเกล้า</span>
-            <span className="text-[10px] text-[#00897B] leading-tight">AI Pre-Triage @ Home</span>
-          </div>
+    <div className="w-full min-h-screen bg-[#F4F9FF] flex flex-col overflow-x-hidden">
+      
+      {/* Hidden PDF Template */}
+      <div className="absolute -left-[9999px] top-0">
+        <div ref={pdfRef}>
+          <PdfTemplate result={result} summary={summary} />
         </div>
-        <Home className="text-[#00897B] cursor-pointer" onClick={() => router.push('/')} />
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-24">
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto" ref={resultRef}>
         {/* Banner */}
         <div 
           className="relative pt-6 px-5 pb-16 rounded-b-[2rem] transition-colors duration-500" 
@@ -93,8 +156,8 @@ export default function ResultTriage() {
           <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex justify-between items-start border border-gray-50">
             <div className="flex-1 pr-2">
               <p className="text-xs text-gray-500 font-medium">อาการที่ประเมิน</p>
-              <h2 className="text-2xl font-black mt-1 tracking-tight" style={{ color: theme.main }}>{theme.title}</h2>
-              <p className="text-[11px] text-gray-600 mt-2 leading-relaxed font-medium">{theme.subtitle}</p>
+              <h2 className="text-3xl font-black mt-1 tracking-tight" style={{ color: theme.main }}>{theme.title}</h2>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{theme.subtitle}</p>
             </div>
             <div className="opacity-15 flex-shrink-0" style={{ color: theme.main }}>
               <IconComp size={56} strokeWidth={1.5} />
@@ -106,7 +169,7 @@ export default function ResultTriage() {
         <div className="px-5 mt-5 space-y-4">
           
           {/* Destination */}
-          <div className="border-2 rounded-2xl p-4 flex items-center gap-4 bg-white" style={{ borderColor: theme.bg }}>
+          <div className="rounded-2xl p-4 flex items-center gap-4 bg-white border border-gray-200 shadow-sm" style={{ borderColor: theme.bg }}>
             <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.bg, color: theme.main }}>
               <MapPin size={24} />
             </div>
@@ -118,7 +181,7 @@ export default function ResultTriage() {
           </div>
 
           {/* Reason */}
-          <div className="border-2 rounded-2xl p-4 bg-white" style={{ borderColor: theme.bg }}>
+          <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm" style={{ borderColor: theme.bg }}>
             <div className="flex items-center gap-2 mb-2" style={{ color: theme.main }}>
               <Lock size={16} />
               <span className="text-xs font-bold">สาเหตุที่ประเมิน</span>
@@ -127,7 +190,7 @@ export default function ResultTriage() {
           </div>
 
           {/* Nurse Message */}
-          <div className="border-2 rounded-2xl p-4 bg-white" style={{ borderColor: theme.bg }}>
+          <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm" style={{ borderColor: theme.bg }}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2" style={{ color: theme.main }}>
                 <UserCircle size={18} />
@@ -140,7 +203,7 @@ export default function ResultTriage() {
 
           {/* To Do List */}
           {result.to_do_list && result.to_do_list.length > 0 && (
-            <div className="border-2 rounded-2xl p-4 bg-white" style={{ borderColor: theme.bg }}>
+            <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm" style={{ borderColor: theme.bg }}>
               <div className="flex items-center gap-2 mb-3" style={{ color: theme.main }}>
                 <ClipboardList size={16} />
                 <span className="text-xs font-bold">คำแนะนำที่ควรทำ {isRed && '(ทันที)'}</span>
@@ -149,7 +212,7 @@ export default function ResultTriage() {
                 {result.to_do_list.map((item: string, i: number) => (
                   <div key={i} className="flex items-start gap-2.5">
                     <CheckCircle2 size={14} className="mt-0.5 flex-shrink-0" style={{ color: theme.main }} />
-                    <span className="text-[11px] text-gray-700 font-medium leading-relaxed">{item}</span>
+                    <span className="text-sm text-gray-700 leading-relaxed">{item}</span>
                   </div>
                 ))}
               </div>
@@ -158,7 +221,7 @@ export default function ResultTriage() {
 
           {/* Warning Symptoms */}
           {result.return_symptoms && result.return_symptoms.length > 0 && (
-            <div className="border-2 rounded-2xl p-4 bg-white" style={{ borderColor: theme.bg }}>
+            <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm" style={{ borderColor: theme.bg }}>
               <div className="flex items-center gap-2 mb-3" style={{ color: theme.main }}>
                 <AlertTriangle size={16} />
                 <span className="text-xs font-bold">อาการเตือนที่ควรกลับมาพบแพทย์</span>
@@ -167,7 +230,7 @@ export default function ResultTriage() {
                 {result.return_symptoms.map((item: string, i: number) => (
                   <div key={i} className="flex items-start gap-2.5">
                     <Check size={14} className="mt-0.5 flex-shrink-0" style={{ color: theme.main }} strokeWidth={3} />
-                    <span className="text-[11px] text-gray-700 font-medium leading-relaxed">{item}</span>
+                    <span className="text-sm text-gray-700 leading-relaxed">{item}</span>
                   </div>
                 ))}
               </div>
@@ -175,11 +238,11 @@ export default function ResultTriage() {
           )}
 
           {/* Action Buttons */}
-          <div className="pt-2 pb-6">
+          <div data-html2canvas-ignore className="pt-2 pb-4">
             {isRed ? (
               <a 
                 href="tel:1669"
-                className="w-full h-14 bg-[#E53935] text-white rounded-2xl flex items-center px-5 shadow-lg active:scale-95 transition-transform"
+                className="w-full h-14 bg-[#DC2626] text-white rounded-2xl flex items-center px-5 shadow-lg active:scale-95 transition-transform"
               >
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
                   <Phone size={20} fill="white" />
@@ -192,14 +255,18 @@ export default function ResultTriage() {
               </a>
             ) : (
               <button 
-                className="w-full h-14 text-white rounded-2xl flex items-center px-4 shadow-lg active:scale-95 transition-transform" 
+                onClick={handleSaveImage}
+                disabled={isExportingImage}
+                className="w-full h-14 text-white rounded-2xl flex items-center px-4 shadow-lg active:scale-95 transition-transform disabled:opacity-70" 
                 style={{ backgroundColor: theme.main }}
               >
                 <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center mr-3">
-                  <FileText size={18} />
+                  {isExportingImage ? <Loader2 size={18} className="animate-spin" /> : <FileText size={18} />}
                 </div>
                 <div className="flex flex-col items-start flex-1 text-left">
-                  <span className="font-bold text-[13px]">บันทึกผลการประเมิน</span>
+                  <span className="font-bold text-[13px]">
+                    {isExportingImage ? 'กำลังบันทึกรูปภาพ...' : 'บันทึกผลการประเมิน'}
+                  </span>
                   <span className="text-[10px] font-medium opacity-90">เพื่อใช้ยื่นที่ {result.destination.split(' ')[0]}</span>
                 </div>
                 <ChevronRight size={20} />
@@ -207,22 +274,32 @@ export default function ResultTriage() {
             )}
             
             <button 
-              className="w-full mt-5 flex items-center justify-center gap-2 text-xs font-bold active:opacity-70 transition-opacity" 
+              onClick={handleDownloadPdf}
+              disabled={isExportingPdf}
+              className="w-full mt-5 flex items-center justify-center gap-2 text-xs font-bold active:opacity-70 transition-opacity disabled:opacity-50" 
               style={{ color: theme.main }}
             >
-              <Download size={16} />
-              <span>ดาวน์โหลดผลการประเมิน (PDF)</span>
+              {isExportingPdf ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+              <span>{isExportingPdf ? 'กำลังสร้างไฟล์ PDF...' : 'ดาวน์โหลดผลการประเมิน (PDF)'}</span>
             </button>
             
-            <p className="text-center text-[9px] text-gray-400 mt-5 mb-2 font-medium">
+            <p className="text-center text-xs text-gray-400 mt-5 mb-2 font-medium">
               ** สามารถใช้เป็นหลักฐานในการเข้ารับการรักษาที่โรงพยาบาลได้ **
             </p>
           </div>
-
         </div>
       </div>
 
-      
+      {/* Sticky Bottom Button — ไม่ fixed แต่ stick อยู่ล่างของ flex container */}
+      <div className="px-5 py-4 bg-[#F4F9FF] border-t border-blue-100">
+        <button 
+          onClick={() => router.push('/')}
+          className="w-full h-12 bg-white border-2 border-blue-100 text-[#002D62] rounded-2xl flex items-center justify-center gap-2 text-[15px] font-bold hover:bg-blue-50 active:scale-95 transition-all shadow-sm"
+        >
+          <Home size={18} />
+          กลับหน้าหลัก
+        </button>
+      </div>
     </div>
   );
 }
